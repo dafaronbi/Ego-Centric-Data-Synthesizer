@@ -6,27 +6,38 @@ import numpy as np
 import yaml
 
 SAMPLE_RATE = 41000
+FORMATS = ["44K_16bit", "48K_24bit", "96K_24bit"]
+
+def load_hrir(az, ele, dir, format):
+    filename = "azi_" + str(az) + ",0_" + "ele_" + str(ele) + ",0.wav"
+    fullpath = dir + format + "/" + filename
+    audio = librosa.load(fullpath, mono=False, sr=SAMPLE_RATE)
+    return audio
 
 with open("test.yaml", 'r') as stream:
     parameters = yaml.load(stream, Loader=yaml.FullLoader)
 
 #get number of sound events to place in file
 SOUND_EVENT_NUM = np.random.randint(low=parameters["number_of_sound_events"][0], high=parameters["number_of_sound_events"][1])
+
 background_type = np.random.choice(parameters["backgrounds"], 1, p=parameters["backgrounds_pv"])[0]
-print(background_type)
 possible_backgrounds = [i for i in os.listdir(parameters["background_db_location"]) if 
                         os.path.isfile(os.path.join(parameters["background_db_location"],i)) and background_type in i]
-background = np.random.choice(possible_backgrounds, 1)[0]
+background = os.path.join(parameters["background_db_location"],np.random.choice(possible_backgrounds, 1)[0])
 print(background)
+
+output_audio = librosa.load(background, mono=False, sr=SAMPLE_RATE)
 
 #select
 for sounds in range(SOUND_EVENT_NUM):
 
     print(parameters["hrir_database"])
-    hrir = np.random.choice(parameters["hrir_database"], 1, p=parameters["hrir_database_pv"])
+    hrir = np.random.choice(parameters["hrir_database"], 1, p=parameters["hrir_database_pv"]) + "_HRIR_WAV"
     print(hrir)
-    angle = np.random.choice([*range(len(parameters["hrir_angle_range"]))], 1, p=parameters["hrir_angle_range_pv"])
-    print(parameters["hrir_angle_range"][angle[0]])
+    angle_index = np.random.choice([*range(len(parameters["hrir_angle_range"]))], 1, p=parameters["hrir_angle_range_pv"])
+    angle = parameters["hrir_angle_range"][angle[0]]
+    print(angle)
+    print(load_hrir(angle, 0, os.join(parameters["hrir_db_location"], hrir), FORMATS[0]))
     s_class = np.random.choice(parameters["sound_event_class"], 1, p=parameters["sound_event_class_pv"])
     print(s_class)
 exit()
