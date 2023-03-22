@@ -48,6 +48,8 @@ for scene_num in range(parameters["number_of_scenes"]):
 
         fold = np.random.choice(parameters["sound_event_fold"], 1, p=parameters["sound_event_fold_pv"])[0]
 
+        print(os.path.join(parameters["foreground_db_location"],fold) + "/*" + str(s_class) + "-0-0.wav")
+
         possible_foregrounds = glob.glob(os.path.join(parameters["foreground_db_location"],fold) + "/*" + str(s_class) + "-0-0.wav")
         foreground = os.path.join(parameters["foreground_db_location"], np.random.choice(possible_foregrounds, 1)[0])
 
