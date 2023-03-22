@@ -27,6 +27,7 @@ background = os.path.join(parameters["background_db_location"],np.random.choice(
 print(background)
 
 output_audio,_ = librosa.load(background, mono=False, sr=SAMPLE_RATE)
+print(output_audio.shape)
 
 #select
 for sounds in range(SOUND_EVENT_NUM):
