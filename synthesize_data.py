@@ -4,6 +4,7 @@ import librosa
 import os
 import numpy as np
 import yaml
+import glob
 
 SAMPLE_RATE = 41000
 FORMATS = ["44K_16bit", "48K_24bit", "96K_24bit"]
@@ -42,10 +43,15 @@ for scene_num in range(parameters["number_of_scenes"]):
         angle = np.random.randint(low=angle_range[0], high=angle_range[1])
         print(angle)
         hrir = load_hrir(angle, 0, os.path.join(parameters["hrir_db_location"], hrir_path), FORMATS[0])
-        s_class = np.random.choice(parameters["sound_event_class"], 1, p=parameters["sound_event_class_pv"])
+        s_class = np.random.choice(parameters["sound_event_class"], 1, p=parameters["sound_event_class_pv"])[0]
         print(s_class)
 
-        sound_event,_ = librosa.load("test.aiff", sr=SAMPLE_RATE)
+        fold = np.random.choice(parameters["sound_event_fold"], 1, p=parameters["sound_event_fold_pv"])[0]
+
+        possible_foregrounds = glob.glob(os.path.join(parameters["foreground_db_location"],fold) + "/*" + str(s_class) + "-0-0.wav")
+        foreground = os.path.join(parameters["foreground_db_location"], np.random.choice(possible_backgrounds, 1)[0])
+
+        sound_event,_ = librosa.load(foreground, sr=SAMPLE_RATE)
 
         left = signal.convolve(sound_event, hrir[0], mode='same')
         right = signal.convolve(sound_event, hrir[1], mode='same')
@@ -54,9 +60,8 @@ for scene_num in range(parameters["number_of_scenes"]):
 
         pad_size = len(output_audio[0]) - len(sound_event[0])
         k = np.random.randint(pad_size)
-        print(sound_event.shape)
+
         sound_event = np.pad(sound_event, ((0,0),(k,pad_size-k)) , 'constant')
-        print(sound_event.shape)
         
         output_audio += sound_event
 
