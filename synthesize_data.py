@@ -13,6 +13,7 @@ with open("test.yaml", 'r') as stream:
 #get number of sound events to place in file
 SOUND_EVENT_NUM = np.random.randint(low=parameters["number_of_sound_events"][0], high=parameters["number_of_sound_events"][1])
 background_type = np.random.choice(parameters["backgrounds"], 1, p=parameters["backgrounds_pv"])
+print(background_type)
 possible_backgrounds = [i for i in os.listdir(parameters["background_db_location"]) if 
                         os.path.isfile(os.path.join(parameters["background_db_location"],i)) and background_type in i]
 
