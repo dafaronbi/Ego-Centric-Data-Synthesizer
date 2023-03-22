@@ -44,6 +44,8 @@ for sounds in range(SOUND_EVENT_NUM):
 
     sound_event,_ = librosa.load("test.aiff", sr=SAMPLE_RATE)
 
+    print(sound_event.shape)
+    print(hrir.shape)
     left = signal.convolve(sound_event, hrir[0], mode='same')
     right = signal.convolve(sound_event, hrir[1], mode='same')
 
