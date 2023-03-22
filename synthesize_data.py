@@ -11,7 +11,7 @@ FORMATS = ["44K_16bit", "48K_24bit", "96K_24bit"]
 def load_hrir(az, ele, dir, format):
     filename = "azi_" + str(az) + ",0_" + "ele_" + str(ele) + ",0.wav"
     fullpath = dir + "/" + format + "/" + filename
-    audio = librosa.load(fullpath, mono=False, sr=SAMPLE_RATE)
+    audio,_ = librosa.load(fullpath, mono=False, sr=SAMPLE_RATE)
     return audio
 
 with open("test.yaml", 'r') as stream:
