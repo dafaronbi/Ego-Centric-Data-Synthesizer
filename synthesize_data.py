@@ -32,7 +32,7 @@ output_audio = librosa.load(background, mono=False, sr=SAMPLE_RATE)
 for sounds in range(SOUND_EVENT_NUM):
 
     print(parameters["hrir_database"])
-    hrir = np.random.choice(parameters["hrir_database"], 1, p=parameters["hrir_database_pv"]) + "_HRIR_WAV"
+    hrir = np.random.choice(parameters["hrir_database"], 1, p=parameters["hrir_database_pv"])[0] + "_HRIR_WAV"
     print(hrir)
     angle_index = np.random.choice([*range(len(parameters["hrir_angle_range"]))], 1, p=parameters["hrir_angle_range_pv"])
     angle = parameters["hrir_angle_range"][angle[0]]
