@@ -52,7 +52,7 @@ for sounds in range(SOUND_EVENT_NUM):
     pad_size = len(output_audio[0]) - len(sound_event[0])
     k = np.random.randint(pad_size)
     print(sound_event.shape)
-    sound_event = np.pad(sound_event, ((k,pad_size-k), (k,pad_size-k)) , 'constant',constant_values=(0,0), )
+    sound_event = np.pad(sound_event, ((k,pad_size-k), (k,pad_size-k)) , 'constant',constant_values=((0,0), (0,0)), )
     
     output_audio += sound_event
 
