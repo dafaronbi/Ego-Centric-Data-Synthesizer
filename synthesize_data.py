@@ -17,47 +17,51 @@ def load_hrir(az, ele, dir, format):
 with open("test.yaml", 'r') as stream:
     parameters = yaml.load(stream, Loader=yaml.FullLoader)
 
-#get number of sound events to place in file
-SOUND_EVENT_NUM = np.random.randint(low=parameters["number_of_sound_events"][0], high=parameters["number_of_sound_events"][1])
 
-background_type = np.random.choice(parameters["backgrounds"], 1, p=parameters["backgrounds_pv"])[0]
-possible_backgrounds = [i for i in os.listdir(parameters["background_db_location"]) if 
-                        os.path.isfile(os.path.join(parameters["background_db_location"],i)) and background_type in i]
-background = os.path.join(parameters["background_db_location"],np.random.choice(possible_backgrounds, 1)[0])
-print(background)
+for scene_num in range(parameters["number_of_scenes"]):
 
-output_audio,_ = librosa.load(background, mono=False, sr=SAMPLE_RATE)
+    #get number of sound events to place in file
+    SOUND_EVENT_NUM = np.random.randint(low=parameters["number_of_sound_events"][0], high=parameters["number_of_sound_events"][1])
 
-#select
-for sounds in range(SOUND_EVENT_NUM):
+    background_type = np.random.choice(parameters["backgrounds"], 1, p=parameters["backgrounds_pv"])[0]
+    possible_backgrounds = [i for i in os.listdir(parameters["background_db_location"]) if 
+                            os.path.isfile(os.path.join(parameters["background_db_location"],i)) and background_type in i]
+    background = os.path.join(parameters["background_db_location"],np.random.choice(possible_backgrounds, 1)[0])
+    print(background)
 
-    print(parameters["hrir_database"])
-    hrir_path = np.random.choice(parameters["hrir_database"], 1, p=parameters["hrir_database_pv"])[0] + "_HRIR_WAV"
-    print(hrir_path)
-    angle_index = np.random.choice([*range(len(parameters["hrir_angle_range"]))], 1, p=parameters["hrir_angle_range_pv"])
-    angle_range = parameters["hrir_angle_range"][angle_index[0]]
-    angle = np.random.randint(low=angle_range[0], high=angle_range[1])
-    print(angle)
-    hrir = load_hrir(angle, 0, os.path.join(parameters["hrir_db_location"], hrir_path), FORMATS[0])
-    s_class = np.random.choice(parameters["sound_event_class"], 1, p=parameters["sound_event_class_pv"])
-    print(s_class)
+    output_audio,_ = librosa.load(background, mono=False, sr=SAMPLE_RATE)
 
-    sound_event,_ = librosa.load("test.aiff", sr=SAMPLE_RATE)
+    #select
+    for sounds in range(SOUND_EVENT_NUM):
 
-    left = signal.convolve(sound_event, hrir[0], mode='same')
-    right = signal.convolve(sound_event, hrir[1], mode='same')
+        print(parameters["hrir_database"])
+        hrir_path = np.random.choice(parameters["hrir_database"], 1, p=parameters["hrir_database_pv"])[0] + "_HRIR_WAV"
+        print(hrir_path)
+        angle_index = np.random.choice([*range(len(parameters["hrir_angle_range"]))], 1, p=parameters["hrir_angle_range_pv"])
+        angle_range = parameters["hrir_angle_range"][angle_index[0]]
+        angle = np.random.randint(low=angle_range[0], high=angle_range[1])
+        print(angle)
+        hrir = load_hrir(angle, 0, os.path.join(parameters["hrir_db_location"], hrir_path), FORMATS[0])
+        s_class = np.random.choice(parameters["sound_event_class"], 1, p=parameters["sound_event_class_pv"])
+        print(s_class)
 
-    sound_event = audio = np.array([left, right])
+        sound_event,_ = librosa.load("test.aiff", sr=SAMPLE_RATE)
 
-    pad_size = len(output_audio[0]) - len(sound_event[0])
-    k = np.random.randint(pad_size)
-    print(sound_event.shape)
-    sound_event = np.pad(sound_event, ((0,0),(k,pad_size-k)) , 'constant')
-    print(sound_event.shape)
-    
-    output_audio += sound_event
+        left = signal.convolve(sound_event, hrir[0], mode='same')
+        right = signal.convolve(sound_event, hrir[1], mode='same')
 
-write("output.wav", rate=SAMPLE_RATE, data=output_audio.T)
+        sound_event = audio = np.array([left, right])
+
+        pad_size = len(output_audio[0]) - len(sound_event[0])
+        k = np.random.randint(pad_size)
+        print(sound_event.shape)
+        sound_event = np.pad(sound_event, ((0,0),(k,pad_size-k)) , 'constant')
+        print(sound_event.shape)
+        
+        output_audio += sound_event
+
+    write("output" + str(scene_num) +".wav", rate=SAMPLE_RATE, data=output_audio.T)
+
 exit()
 
 formats = ["44K_16bit", "48K_24bit", "96K_24bit"]
