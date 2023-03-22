@@ -26,21 +26,37 @@ possible_backgrounds = [i for i in os.listdir(parameters["background_db_location
 background = os.path.join(parameters["background_db_location"],np.random.choice(possible_backgrounds, 1)[0])
 print(background)
 
-output_audio = librosa.load(background, mono=False, sr=SAMPLE_RATE)
+output_audio,_ = librosa.load(background, mono=False, sr=SAMPLE_RATE)
 
 #select
 for sounds in range(SOUND_EVENT_NUM):
 
     print(parameters["hrir_database"])
-    hrir = np.random.choice(parameters["hrir_database"], 1, p=parameters["hrir_database_pv"])[0] + "_HRIR_WAV"
-    print(hrir)
+    hrir_path = np.random.choice(parameters["hrir_database"], 1, p=parameters["hrir_database_pv"])[0] + "_HRIR_WAV"
+    print(hrir_path)
     angle_index = np.random.choice([*range(len(parameters["hrir_angle_range"]))], 1, p=parameters["hrir_angle_range_pv"])
     angle_range = parameters["hrir_angle_range"][angle_index[0]]
     angle = np.random.randint(low=angle_range[0], high=angle_range[1])
     print(angle)
-    print(load_hrir(angle, 0, os.path.join(parameters["hrir_db_location"], hrir), FORMATS[0]))
+    hrir = load_hrir(angle, 0, os.path.join(parameters["hrir_db_location"], hrir_path), FORMATS[0])
     s_class = np.random.choice(parameters["sound_event_class"], 1, p=parameters["sound_event_class_pv"])
     print(s_class)
+
+    sound_event,_ = librosa.load("test.aiff", sr=SAMPLE_RATE)
+
+    left = signal.convolve(sound_event, hrir[0], mode='same')
+    right = signal.convolve(sound_event, hrir[1], mode='same')
+
+    sound_event = audio = np.array([left, right])
+
+    pad_size = len(output_audio[0]) - len(sound_event[0])
+    k = np.random.randint(pad_size)
+
+    sound_event = np.pad(sound_event, 'constant', pad_width=((k,pad_size-k), (k,pad_size-k)),constant_values=(0,0), )
+    
+    output_audio += sound_event
+
+write("output.wav", rate=SAMPLE_RATE, data=output_audio.T)
 exit()
 
 formats = ["44K_16bit", "48K_24bit", "96K_24bit"]
