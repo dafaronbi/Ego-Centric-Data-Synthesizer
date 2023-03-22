@@ -16,8 +16,8 @@ background_type = np.random.choice(parameters["backgrounds"], 1, p=parameters["b
 print(background_type)
 possible_backgrounds = [i for i in os.listdir(parameters["background_db_location"]) if 
                         os.path.isfile(os.path.join(parameters["background_db_location"],i)) and background_type in i]
-
-print(possible_backgrounds)
+background = np.random.choice(possible_backgrounds, 1)[0]
+print(background)
 
 #select
 for sounds in range(SOUND_EVENT_NUM):
