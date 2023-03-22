@@ -27,7 +27,6 @@ background = os.path.join(parameters["background_db_location"],np.random.choice(
 print(background)
 
 output_audio,_ = librosa.load(background, mono=False, sr=SAMPLE_RATE)
-print(output_audio.shape)
 
 #select
 for sounds in range(SOUND_EVENT_NUM):
@@ -53,7 +52,8 @@ for sounds in range(SOUND_EVENT_NUM):
     pad_size = len(output_audio[0]) - len(sound_event[0])
     k = np.random.randint(pad_size)
     print(sound_event.shape)
-    sound_event = np.pad(sound_event, (k,pad_size-k) , 'constant')
+    sound_event = np.pad(sound_event, (2,2) , 'constant')
+    print(sound_event)
     
     output_audio += sound_event
 
