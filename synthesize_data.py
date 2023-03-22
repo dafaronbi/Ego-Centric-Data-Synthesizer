@@ -10,9 +10,15 @@ SAMPLE_RATE = 41000
 with open("test.yaml", 'r') as stream:
     parameters = yaml.load(stream, Loader=yaml.FullLoader)
 
-# print(parameters["number_of_sound_events"])
+#get number of sound events to place in file
 SOUND_EVENT_NUM = np.random.randint(low=parameters["number_of_sound_events"][0], high=parameters["number_of_sound_events"][1])
+background_type = np.random.choice(parameters["backgrounds"], 1, p=parameters["backgrounds_pv"])
+possible_backgrounds = [i for i in os.listdir(parameters["background_db_location"]) if 
+                        os.path.isfile(os.path.join(parameters["background_db_location"],i)) and background_type in i]
 
+print(possible_backgrounds)
+
+#select
 for sounds in range(SOUND_EVENT_NUM):
 
     print(parameters["hrir_database"])
