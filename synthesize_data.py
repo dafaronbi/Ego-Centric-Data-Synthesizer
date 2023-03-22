@@ -35,7 +35,8 @@ for sounds in range(SOUND_EVENT_NUM):
     hrir = np.random.choice(parameters["hrir_database"], 1, p=parameters["hrir_database_pv"])[0] + "_HRIR_WAV"
     print(hrir)
     angle_index = np.random.choice([*range(len(parameters["hrir_angle_range"]))], 1, p=parameters["hrir_angle_range_pv"])
-    angle = parameters["hrir_angle_range"][angle_index[0]]
+    angle_range = parameters["hrir_angle_range"][angle_index[0]]
+    angle = np.random.randint(low=angle_range[0], high=angle_range[1])
     print(angle)
     print(load_hrir(angle, 0, os.path.join(parameters["hrir_db_location"], hrir), FORMATS[0]))
     s_class = np.random.choice(parameters["sound_event_class"], 1, p=parameters["sound_event_class_pv"])
